@@ -107,6 +107,8 @@ pub struct RapidApp {
     selected: Option<String>,
     filter: Entity<InputState>,
     focus_handle: FocusHandle,
+    tab_scroll: ScrollHandle,
+    revealed_tab: Option<usize>,
     _subs: Vec<Subscription>,
 }
 
@@ -139,6 +141,8 @@ impl RapidApp {
             selected: None,
             filter,
             focus_handle,
+            tab_scroll: ScrollHandle::new(),
+            revealed_tab: None,
             _subs: subs,
         };
         this.open_request(Request::default(), None, window, cx);
@@ -1876,6 +1880,7 @@ impl RapidApp {
                     .min_w_0()
                     .h_full()
                     .overflow_x_scroll()
+                    .track_scroll(&self.tab_scroll)
                     .children(tabs)
                     .child(
                         div().px_1().child(
@@ -2034,6 +2039,12 @@ impl RapidApp {
 
 impl Render for RapidApp {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        if self.active != self.revealed_tab {
+            if let Some(ix) = self.active {
+                self.tab_scroll.scroll_to_item(ix);
+            }
+            self.revealed_tab = self.active;
+        }
         let content: AnyElement = match self.active.and_then(|ix| self.tabs.get(ix)) {
             Some(TabItem::Request(v)) => v.clone().into_any_element(),
             Some(TabItem::Env(v)) => v.clone().into_any_element(),
