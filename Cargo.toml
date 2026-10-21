@@ -1,0 +1,26 @@
+[package]
+name = "rapid"
+version = "0.1.0"
+edition = "2024"
+description = "A Postman-like API client built with Rust and GPUI"
+license = "MIT"
+
+[dependencies]
+gpui-kit = { version = "0.8", features = ["tree-sitter"] }
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+serde_yaml = "0.9"
+ureq = { version = "3", features = ["json"] }
+url = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
+dirs = "6"
+shlex = "1"
+base64 = "0.22"
+env_logger = "0.11"
+log = "0.4"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
